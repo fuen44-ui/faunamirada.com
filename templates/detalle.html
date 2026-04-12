@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}{{ obra.titulo }} — Fauna Mirada{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <a href="{{ url_for('galeria') }}"
+       class="text-zinc-500 hover:text-zinc-300 text-sm flex items-center gap-2 mb-10 transition-colors w-fit">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Volver a la galería
+    </a>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+
+        <!-- Media -->
+        <div class="sticky top-20">
+            {% if obra.tipo == 'video' %}
+                <video src="{{ obra.cloudinary_url }}" controls class="w-full rounded-2xl shadow-2xl" autoplay muted loop></video>
+            {% else %}
+                <a href="{{ obra.cloudinary_url }}" class="glightbox block" data-title="{{ obra.titulo }}">
+                    <img src="{{ obra.cloudinary_url }}"
+                         alt="{{ obra.titulo }}"
+                         class="w-full rounded-2xl shadow-2xl hover:opacity-95 transition-opacity cursor-zoom-in">
+                </a>
+                <p class="text-zinc-600 text-xs text-center mt-3">Haz clic para ver en tamaño completo</p>
+            {% endif %}
+        </div>
+
+        <!-- Info -->
+        <div>
+            {% if obra.destacada %}
+            <span class="inline-flex items-center gap-1.5 bg-fauna-500/20 text-fauna-400 text-xs px-3 py-1 rounded-full mb-4">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                Obra destacada
+            </span>
+            {% endif %}
+
+            <h1 class="font-display text-4xl sm:text-5xl text-white mb-4 leading-tight">{{ obra.titulo }}</h1>
+
+            <div class="flex flex-wrap gap-x-6 gap-y-2 text-zinc-400 mb-8">
+                <div>
+                    <span class="text-zinc-600 text-xs uppercase tracking-wider">Artista</span>
+                    <p class="text-white font-medium mt-0.5">{{ obra.artista }}</p>
+                </div>
+                {% if obra.año %}
+                <div>
+                    <span class="text-zinc-600 text-xs uppercase tracking-wider">Año</span>
+                    <p class="text-white font-medium mt-0.5">{{ obra.año }}</p>
+                </div>
+                {% endif %}
+                {% if obra.tecnica %}
+                <div>
+                    <span class="text-zinc-600 text-xs uppercase tracking-wider">Técnica</span>
+                    <p class="text-white font-medium mt-0.5">{{ obra.tecnica }}</p>
+                </div>
+                {% endif %}
+                {% if obra.categoria %}
+                <div>
+                    <span class="text-zinc-600 text-xs uppercase tracking-wider">Categoría</span>
+                    <p class="text-white font-medium mt-0.5">{{ obra.categoria }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if obra.descripcion %}
+            <div class="border-t border-zinc-800 pt-8 mb-8">
+                <p class="text-zinc-400 leading-relaxed text-base">{{ obra.descripcion }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Acciones -->
+            <div class="flex items-center gap-3 border-t border-zinc-800 pt-8">
+                <a href="{{ url_for('subir') }}"
+                   class="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-5 py-2.5 rounded-full text-sm font-medium transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Añadir obra
+                </a>
+
+                <form method="POST" action="{{ url_for('eliminar', id=obra.id) }}"
+                      onsubmit="return confirm('¿Eliminar esta obra? Esta acción no se puede deshacer.')">
+                    <button type="submit"
+                            class="flex items-center gap-2 text-zinc-600 hover:text-red-400 px-4 py-2.5 rounded-full text-sm transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        Eliminar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Relacionadas -->
+    {% if relacionadas %}
+    <section class="mt-24">
+        <h2 class="font-display text-2xl text-zinc-300 mb-8 flex items-center gap-3">
+            <span class="w-6 h-px bg-fauna-500"></span>
+            Más obras
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {% for rel in relacionadas %}
+            <a href="{{ url_for('detalle', id=rel.id) }}"
+               class="group relative aspect-square overflow-hidden rounded-xl bg-zinc-900 block">
+                {% if rel.tipo == 'video' %}
+                    <video src="{{ rel.cloudinary_url }}" muted autoplay loop playsinline
+                           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></video>
+                {% else %}
+                    <img src="{{ rel.thumbnail_url or rel.cloudinary_url }}"
+                         alt="{{ rel.titulo }}"
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                         loading="lazy">
+                {% endif %}
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div class="absolute bottom-3 left-3 right-3">
+                        <p class="font-display text-white text-sm truncate">{{ rel.titulo }}</p>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+</div>
+{% endblock %}

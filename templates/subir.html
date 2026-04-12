@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Añadir obra — Fauna Mirada{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-16">
+
+    <div class="mb-10">
+        <a href="{{ url_for('galeria') }}" class="text-zinc-500 hover:text-zinc-300 text-sm flex items-center gap-2 mb-6 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Volver a la galería
+        </a>
+        <h1 class="font-display text-4xl text-white mb-2">Añadir obra</h1>
+        <p class="text-zinc-500">Sube una imagen o vídeo a la galería</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" id="form-subir" class="space-y-6">
+
+        <!-- Zona de upload -->
+        <div>
+            <label class="block text-sm font-medium text-zinc-300 mb-3">Archivo *</label>
+            <div id="drop-zone"
+                 class="border-2 border-dashed border-zinc-700 rounded-2xl p-10 text-center cursor-pointer
+                        hover:border-fauna-500 hover:bg-fauna-500/5 transition-all group relative">
+                <input type="file" name="archivo" id="archivo" accept="image/*,video/*" required
+                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+
+                <!-- Estado inicial -->
+                <div id="upload-placeholder" class="">
+                    <div class="w-16 h-16 bg-zinc-800 group-hover:bg-fauna-500/20 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors">
+                        <svg class="w-8 h-8 text-zinc-500 group-hover:text-fauna-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                    </div>
+                    <p class="text-zinc-400 font-medium">Arrastra aquí o haz clic para seleccionar</p>
+                    <p class="text-zinc-600 text-sm mt-2">Imágenes: JPG, PNG, WebP, GIF · Vídeos: MP4, MOV, WebM · Máx. 100MB</p>
+                </div>
+
+                <!-- Preview -->
+                <div id="upload-preview" class="hidden">
+                    <div id="img-preview-wrap" class="hidden">
+                        <img id="img-preview" src="" alt="Preview"
+                             class="max-h-48 mx-auto rounded-xl object-contain mb-3">
+                    </div>
+                    <div id="vid-preview-wrap" class="hidden">
+                        <video id="vid-preview" class="max-h-48 mx-auto rounded-xl mb-3" controls muted></video>
+                    </div>
+                    <p id="file-name" class="text-fauna-400 font-medium"></p>
+                    <p class="text-zinc-600 text-xs mt-1">Haz clic para cambiar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Título -->
+        <div>
+            <label for="titulo" class="block text-sm font-medium text-zinc-300 mb-2">Título *</label>
+            <input type="text" name="titulo" id="titulo" required
+                   placeholder="Nombre de la obra"
+                   class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white
+                          placeholder-zinc-600 focus:outline-none focus:border-fauna-500 focus:ring-1 focus:ring-fauna-500
+                          transition-colors">
+        </div>
+
+        <!-- Artista y Año -->
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label for="artista" class="block text-sm font-medium text-zinc-300 mb-2">Artista</label>
+                <input type="text" name="artista" id="artista" value="Fauna Mirada"
+                       placeholder="Nombre del artista"
+                       class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white
+                              placeholder-zinc-600 focus:outline-none focus:border-fauna-500 focus:ring-1 focus:ring-fauna-500
+                              transition-colors">
+            </div>
+            <div>
+                <label for="año" class="block text-sm font-medium text-zinc-300 mb-2">Año</label>
+                <input type="text" name="año" id="año"
+                       placeholder="2024"
+                       class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white
+                              placeholder-zinc-600 focus:outline-none focus:border-fauna-500 focus:ring-1 focus:ring-fauna-500
+                              transition-colors">
+            </div>
+        </div>
+
+        <!-- Técnica y Categoría -->
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label for="tecnica" class="block text-sm font-medium text-zinc-300 mb-2">Técnica</label>
+                <input type="text" name="tecnica" id="tecnica"
+                       placeholder="Óleo, acuarela, digital..."
+                       class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white
+                              placeholder-zinc-600 focus:outline-none focus:border-fauna-500 focus:ring-1 focus:ring-fauna-500
+                              transition-colors">
+            </div>
+            <div>
+                <label for="categoria" class="block text-sm font-medium text-zinc-300 mb-2">Categoría</label>
+                <select name="categoria" id="categoria"
+                        class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white
+                               focus:outline-none focus:border-fauna-500 focus:ring-1 focus:ring-fauna-500
+                               transition-colors">
+                    {% for cat in categorias %}
+                    <option value="{{ cat }}">{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!-- Descripción -->
+        <div>
+            <label for="descripcion" class="block text-sm font-medium text-zinc-300 mb-2">Descripción</label>
+            <textarea name="descripcion" id="descripcion" rows="4"
+                      placeholder="Cuéntanos sobre esta obra..."
+                      class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white
+                             placeholder-zinc-600 focus:outline-none focus:border-fauna-500 focus:ring-1 focus:ring-fauna-500
+                             transition-colors resize-none"></textarea>
+        </div>
+
+        <!-- Destacada -->
+        <div class="flex items-center gap-3">
+            <input type="checkbox" name="destacada" id="destacada"
+                   class="w-5 h-5 rounded bg-zinc-800 border-zinc-600 text-fauna-500 focus:ring-fauna-500 cursor-pointer">
+            <label for="destacada" class="text-zinc-400 text-sm cursor-pointer">
+                Marcar como obra destacada (aparece en la sección principal)
+            </label>
+        </div>
+
+        <!-- Botón submit -->
+        <div class="pt-2">
+            <button type="submit" id="btn-submit"
+                    class="w-full bg-fauna-500 hover:bg-fauna-400 text-white py-4 rounded-xl font-medium text-base
+                           transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                </svg>
+                <span id="btn-text">Publicar obra</span>
+                <div id="btn-loader" class="loader w-5 h-5 rounded-full hidden"></div>
+            </button>
+        </div>
+
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const input = document.getElementById('archivo');
+    const placeholder = document.getElementById('upload-placeholder');
+    const preview = document.getElementById('upload-preview');
+    const imgWrap = document.getElementById('img-preview-wrap');
+    const vidWrap = document.getElementById('vid-preview-wrap');
+    const imgEl = document.getElementById('img-preview');
+    const vidEl = document.getElementById('vid-preview');
+    const fileName = document.getElementById('file-name');
+    const form = document.getElementById('form-subir');
+    const btnSubmit = document.getElementById('btn-submit');
+    const btnText = document.getElementById('btn-text');
+    const btnLoader = document.getElementById('btn-loader');
+
+    input.addEventListener('change', () => {
+        const file = input.files[0];
+        if (!file) return;
+
+        placeholder.classList.add('hidden');
+        preview.classList.remove('hidden');
+        fileName.textContent = file.name;
+
+        const url = URL.createObjectURL(file);
+        if (file.type.startsWith('video/')) {
+            imgWrap.classList.add('hidden');
+            vidWrap.classList.remove('hidden');
+            vidEl.src = url;
+        } else {
+            vidWrap.classList.add('hidden');
+            imgWrap.classList.remove('hidden');
+            imgEl.src = url;
+        }
+    });
+
+    form.addEventListener('submit', () => {
+        btnSubmit.disabled = true;
+        btnText.textContent = 'Subiendo...';
+        btnLoader.classList.remove('hidden');
+    });
+</script>
+{% endblock %}

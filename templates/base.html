@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Fauna Mirada{% endblock %}</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'fauna': {
+                            50:  '#fdf8f0',
+                            100: '#faefd8',
+                            200: '#f3d9a8',
+                            300: '#e9bc6e',
+                            400: '#de9b3e',
+                            500: '#d4821f',
+                            600: '#b86516',
+                            700: '#964d15',
+                            800: '#7a3e18',
+                            900: '#653417',
+                            950: '#3a1a09',
+                        }
+                    },
+                    fontFamily: {
+                        'display': ['"Playfair Display"', 'serif'],
+                        'body': ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- GLightbox -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-display { font-family: 'Playfair Display', serif; }
+
+        /* Masonry grid */
+        .masonry {
+            columns: 1;
+            column-gap: 1.5rem;
+        }
+        @media (min-width: 640px)  { .masonry { columns: 2; } }
+        @media (min-width: 1024px) { .masonry { columns: 3; } }
+        @media (min-width: 1280px) { .masonry { columns: 4; } }
+
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Hover overlay */
+        .obra-card .overlay {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .obra-card:hover .overlay {
+            opacity: 1;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #d4821f; border-radius: 3px; }
+
+        /* Flash messages */
+        .flash-success { background: #065f46; border-left: 4px solid #10b981; }
+        .flash-error   { background: #7f1d1d; border-left: 4px solid #ef4444; }
+
+        /* Loader */
+        .loader {
+            border: 3px solid rgba(212,130,31,0.2);
+            border-top-color: #d4821f;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="{{ url_for('galeria') }}" class="flex items-center gap-3 group">
+                    <div class="w-8 h-8 bg-fauna-500 rounded-full flex items-center justify-center group-hover:bg-fauna-400 transition-colors">
+                        <span class="text-white text-sm font-bold">F</span>
+                    </div>
+                    <span class="font-display text-xl tracking-wide text-white">Fauna Mirada</span>
+                </a>
+
+                <div class="flex items-center gap-6">
+                    <a href="{{ url_for('galeria') }}"
+                       class="text-zinc-400 hover:text-white transition-colors text-sm font-medium tracking-wide uppercase">
+                        Galería
+                    </a>
+                    <a href="{{ url_for('subir') }}"
+                       class="bg-fauna-500 hover:bg-fauna-400 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Añadir obra
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="fixed top-20 right-4 z-50 space-y-2 max-w-sm">
+                {% for category, message in messages %}
+                    <div class="flash-{{ category }} text-white px-4 py-3 rounded-lg text-sm shadow-xl">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+            <script>
+                setTimeout(() => {
+                    document.querySelectorAll('[class*="flash-"]').forEach(el => {
+                        el.style.transition = 'opacity 0.5s';
+                        el.style.opacity = '0';
+                        setTimeout(() => el.remove(), 500);
+                    });
+                }, 3500);
+            </script>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main content -->
+    <main class="pt-16">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-24 border-t border-zinc-800 py-10 text-center">
+        <p class="font-display text-lg text-zinc-400 italic">Fauna Mirada</p>
+        <p class="text-zinc-600 text-sm mt-1">© {{ 2024 }} — Todos los derechos reservados</p>
+    </footer>
+
+    <!-- GLightbox JS -->
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+    <script>
+        const lightbox = GLightbox({ touchNavigation: true, loop: true, autoplayVideos: true });
+    </script>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
