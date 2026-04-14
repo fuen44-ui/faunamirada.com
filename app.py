@@ -37,6 +37,7 @@ class Obra(db.Model):
     cloudinary_public_id = db.Column(db.String(200))
     thumbnail_url = db.Column(db.String(500))
     destacada = db.Column(db.Boolean, default=False)
+    en_portfolio = db.Column(db.Boolean, default=False)
     fecha_subida = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
@@ -143,7 +144,8 @@ def subir():
                 cloudinary_url=cloudinary_url,
                 cloudinary_public_id=public_id,
                 thumbnail_url=thumbnail_url,
-                destacada='destacada' in request.form
+                destacada='destacada' in request.form,
+                en_portfolio='en_portfolio' in request.form
             )
             db.session.add(obra)
             db.session.commit()
@@ -172,6 +174,12 @@ def eliminar(id):
     except Exception as e:
         flash(f'Error al eliminar: {str(e)}', 'error')
     return redirect(url_for('galeria'))
+
+
+@app.route('/portfolio')
+def portfolio():
+    obras = Obra.query.filter_by(en_portfolio=True).order_by(Obra.fecha_subida.desc()).all()
+    return render_template('portfolio.html', obras=obras)
 
 
 @app.route('/api/obras')

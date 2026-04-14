@@ -117,13 +117,22 @@
                              transition-colors resize-none"></textarea>
         </div>
 
-        <!-- Destacada -->
-        <div class="flex items-center gap-3">
-            <input type="checkbox" name="destacada" id="destacada"
-                   class="w-5 h-5 rounded bg-zinc-800 border-zinc-600 text-fauna-500 focus:ring-fauna-500 cursor-pointer">
-            <label for="destacada" class="text-zinc-400 text-sm cursor-pointer">
-                Marcar como obra destacada (aparece en la sección principal)
-            </label>
+        <!-- Destacada y Portfolio -->
+        <div class="space-y-3">
+            <div class="flex items-center gap-3">
+                <input type="checkbox" name="destacada" id="destacada"
+                       class="w-5 h-5 rounded bg-zinc-800 border-zinc-600 text-fauna-500 focus:ring-fauna-500 cursor-pointer">
+                <label for="destacada" class="text-zinc-400 text-sm cursor-pointer">
+                    Marcar como obra destacada (aparece en la sección principal)
+                </label>
+            </div>
+            <div class="flex items-center gap-3">
+                <input type="checkbox" name="en_portfolio" id="en_portfolio"
+                       class="w-5 h-5 rounded bg-zinc-800 border-zinc-600 text-fauna-500 focus:ring-fauna-500 cursor-pointer">
+                <label for="en_portfolio" class="text-zinc-400 text-sm cursor-pointer">
+                    Incluir en el Portfolio
+                </label>
+            </div>
         </div>
 
         <!-- Botón submit -->
