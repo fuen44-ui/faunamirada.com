@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Shop — Fauna Mirada{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+    <!-- Cabecera -->
+    <div class="text-center mb-16">
+        <h1 class="font-display text-5xl text-white mb-4">Shop</h1>
+        <p class="text-zinc-400 text-lg max-w-xl mx-auto">
+            Lleva el arte de Fauna Mirada contigo. Elige un producto, selecciona tu obra favorita y lo hacemos realidad.
+        </p>
+    </div>
+
+    {% if not obras %}
+    <!-- Sin obras imprimibles todavía -->
+    <div class="text-center py-20 text-zinc-500">
+        <p class="text-5xl mb-4">🎨</p>
+        <p class="text-lg">Pronto habrá obras disponibles para personalizar productos.</p>
+    </div>
+    {% else %}
+
+    <!-- Productos -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for producto in productos %}
+        <a href="{{ url_for('shop_detalle', producto_id=producto.id) }}"
+           class="group bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-fauna-500 transition-all duration-300 hover:-translate-y-1">
+
+            <!-- Imagen del producto -->
+            <div class="relative h-64 overflow-hidden bg-zinc-800">
+                <img src="{{ producto.imagen_base }}"
+                     alt="{{ producto.nombre }}"
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <!-- Overlay con icono -->
+                <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span class="text-white text-sm font-medium tracking-wide uppercase">Ver opciones</span>
+                </div>
+                <div class="absolute top-3 left-3 text-3xl">{{ producto.icono }}</div>
+            </div>
+
+            <!-- Info -->
+            <div class="p-6">
+                <h2 class="font-display text-xl text-white mb-1">{{ producto.nombre }}</h2>
+                <p class="text-zinc-400 text-sm mb-4">{{ producto.descripcion }}</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-fauna-400 font-semibold text-lg">desde {{ "%.2f"|format(producto.precio) }} €</span>
+                    <span class="text-zinc-500 text-xs uppercase tracking-wide">{{ obras|length }} diseños disponibles</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Obras disponibles -->
+    <div class="mt-20">
+        <h2 class="font-display text-3xl text-white mb-2 text-center">Diseños disponibles</h2>
+        <p class="text-zinc-400 text-center mb-10">Estas obras pueden imprimirse en cualquier producto</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {% for obra in obras %}
+            <div class="group relative aspect-square rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800">
+                <img src="{{ obra.thumbnail_url or obra.cloudinary_url }}"
+                     alt="{{ obra.titulo }}"
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                    <span class="text-white text-xs font-medium truncate w-full">{{ obra.titulo }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% endif %}
+</div>
+{% endblock %}

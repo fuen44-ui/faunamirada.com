@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}{{ producto.nombre }} — Shop Fauna Mirada{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-sm text-zinc-500 mb-10">
+        <a href="{{ url_for('shop') }}" class="hover:text-fauna-400 transition-colors">Shop</a>
+        <span>/</span>
+        <span class="text-zinc-300">{{ producto.nombre }}</span>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+
+        <!-- Mockup visual -->
+        <div class="sticky top-24">
+            <div class="bg-zinc-900 rounded-2xl border border-zinc-800 p-6">
+                <div id="mockup-container" class="relative aspect-square rounded-xl overflow-hidden bg-zinc-800 flex items-center justify-center">
+
+                    <!-- Foto base del producto -->
+                    <img id="producto-img"
+                         src="{{ producto.imagen_base }}"
+                         alt="{{ producto.nombre }}"
+                         class="absolute inset-0 w-full h-full object-cover">
+
+                    <!-- Overlay con el diseño -->
+                    {% if obra %}
+                    <div id="diseño-overlay"
+                         class="absolute inset-0 flex items-center justify-center pointer-events-none"
+                         style="padding: 20%;">
+                        <img id="diseño-img"
+                             src="{{ obra.thumbnail_url or obra.cloudinary_url }}"
+                             alt="{{ obra.titulo }}"
+                             class="w-full h-full object-contain opacity-90 mix-blend-multiply rounded-lg shadow-2xl">
+                    </div>
+                    {% else %}
+                    <div class="relative z-10 text-center text-zinc-400">
+                        <p class="text-4xl mb-2">🎨</p>
+                        <p class="text-sm">Selecciona un diseño</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Badge simulación -->
+                    <div class="absolute bottom-3 right-3 bg-black/70 text-zinc-400 text-xs px-2 py-1 rounded-full">
+                        Vista previa simulada
+                    </div>
+                </div>
+
+                {% if obra %}
+                <p class="text-center text-zinc-400 text-sm mt-4">
+                    Diseño: <span class="text-white font-medium">{{ obra.titulo }}</span>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Panel de configuración -->
+        <div>
+            <div class="flex items-center gap-3 mb-2">
+                <span class="text-4xl">{{ producto.icono }}</span>
+                <h1 class="font-display text-4xl text-white">{{ producto.nombre }}</h1>
+            </div>
+            <p class="text-zinc-400 mb-2">{{ producto.descripcion }}</p>
+            <p class="text-fauna-400 text-3xl font-semibold mb-8">{{ "%.2f"|format(producto.precio) }} €</p>
+
+            <!-- Selector de obra -->
+            <div class="mb-8">
+                <h3 class="text-white font-medium mb-4 uppercase text-sm tracking-wide">Elige el diseño</h3>
+                {% if obras %}
+                <div class="grid grid-cols-3 sm:grid-cols-4 gap-3" id="selector-obras">
+                    {% for o in obras %}
+                    <button onclick="seleccionarObra({{ o.id }}, '{{ o.thumbnail_url or o.cloudinary_url }}', '{{ o.titulo }}')"
+                            class="obra-btn relative aspect-square rounded-xl overflow-hidden border-2 transition-all
+                                   {% if obra and obra.id == o.id %}border-fauna-500 ring-2 ring-fauna-500/30{% else %}border-zinc-700 hover:border-zinc-500{% endif %}">
+                        <img src="{{ o.thumbnail_url or o.cloudinary_url }}"
+                             alt="{{ o.titulo }}"
+                             class="w-full h-full object-cover">
+                        {% if obra and obra.id == o.id %}
+                        <div class="absolute inset-0 bg-fauna-500/20 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-fauna-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        {% endif %}
+                    </button>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-zinc-500 text-sm">Aún no hay diseños disponibles para imprimir.</p>
+                {% endif %}
+            </div>
+
+            <!-- Otros productos -->
+            <div class="mb-8">
+                <h3 class="text-white font-medium mb-4 uppercase text-sm tracking-wide">También disponible en</h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for p in productos %}
+                    {% if p.id != producto.id %}
+                    <a href="{{ url_for('shop_detalle', producto_id=p.id, obra_id=obra.id if obra else '') }}"
+                       class="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-full px-4 py-2 text-sm text-zinc-300 transition-colors">
+                        <span>{{ p.icono }}</span>
+                        <span>{{ p.nombre }}</span>
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Botón comprar (simulado) -->
+            <button id="btn-comprar"
+                    onclick="simularCompra()"
+                    {% if not obra %}disabled{% endif %}
+                    class="w-full bg-fauna-500 hover:bg-fauna-400 disabled:bg-zinc-700 disabled:cursor-not-allowed
+                           text-white font-medium py-4 rounded-xl transition-colors text-lg
+                           flex items-center justify-center gap-3">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 3h2l.4 2M7 13h10l4-4H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                {% if obra %}Añadir al carrito{% else %}Selecciona un diseño{% endif %}
+            </button>
+
+            <!-- Aviso simulación -->
+            <div class="mt-4 bg-zinc-900 border border-zinc-700 rounded-xl p-4 text-zinc-400 text-sm">
+                <p class="font-medium text-zinc-300 mb-1">🚧 Tienda en construcción</p>
+                <p>Esta es una vista previa. Próximamente podrás realizar pedidos reales con envío a domicilio.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    let obraActual = {{ obra.id if obra else 'null' }};
+
+    function seleccionarObra(id, imgUrl, titulo) {
+        obraActual = id;
+
+        // Actualizar mockup
+        const diseñoImg = document.getElementById('diseño-img');
+        if (diseñoImg) {
+            diseñoImg.src = imgUrl;
+        } else {
+            // Primera vez que se selecciona
+            const overlay = document.getElementById('diseño-overlay') || crearOverlay();
+            overlay.querySelector('img').src = imgUrl;
+        }
+
+        // Actualizar label
+        const label = document.querySelector('#mockup-container + p span.text-white');
+        if (label) label.textContent = titulo;
+
+        // Actualizar bordes de selección
+        document.querySelectorAll('.obra-btn').forEach(btn => {
+            btn.classList.remove('border-fauna-500', 'ring-2', 'ring-fauna-500/30');
+            btn.classList.add('border-zinc-700');
+            btn.querySelector('.bg-fauna-500\\/20')?.remove();
+        });
+        event.currentTarget.classList.add('border-fauna-500', 'ring-2', 'ring-fauna-500/30');
+        event.currentTarget.classList.remove('border-zinc-700');
+
+        // Actualizar URL sin recargar
+        const url = new URL(window.location);
+        url.searchParams.set('obra_id', id);
+        window.history.replaceState({}, '', url);
+
+        // Activar botón
+        const btn = document.getElementById('btn-comprar');
+        btn.disabled = false;
+        btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 3h2l.4 2M7 13h10l4-4H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg> Añadir al carrito`;
+    }
+
+    function simularCompra() {
+        const btn = document.getElementById('btn-comprar');
+        btn.innerHTML = '✓ ¡Añadido! (próximamente disponible)';
+        btn.classList.remove('bg-fauna-500', 'hover:bg-fauna-400');
+        btn.classList.add('bg-emerald-700');
+        setTimeout(() => {
+            btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 3h2l.4 2M7 13h10l4-4H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg> Añadir al carrito`;
+            btn.classList.add('bg-fauna-500', 'hover:bg-fauna-400');
+            btn.classList.remove('bg-emerald-700');
+        }, 2000);
+    }
+</script>
+{% endblock %}

@@ -38,6 +38,7 @@ class Obra(db.Model):
     thumbnail_url = db.Column(db.String(500))
     destacada = db.Column(db.Boolean, default=False)
     en_portfolio = db.Column(db.Boolean, default=False)
+    imprimible = db.Column(db.Boolean, default=False)
     fecha_subida = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
@@ -54,6 +55,51 @@ class Obra(db.Model):
             'thumbnail': self.thumbnail_url or self.cloudinary_url,
             'destacada': self.destacada,
         }
+
+
+# Catálogo de productos simulado (sin BD, se sustituirá por Printful/Gelato)
+PRODUCTOS = [
+    {
+        'id': 'taza',
+        'nombre': 'Taza',
+        'descripcion': 'Taza de cerámica de 330ml con tu obra favorita.',
+        'precio': 18.90,
+        'imagen_base': 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=600&q=80',
+        'icono': '☕',
+    },
+    {
+        'id': 'camiseta',
+        'nombre': 'Camiseta',
+        'descripcion': 'Camiseta 100% algodón orgánico, tallas XS–XXL.',
+        'precio': 29.90,
+        'imagen_base': 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80',
+        'icono': '👕',
+    },
+    {
+        'id': 'sudadera',
+        'nombre': 'Sudadera',
+        'descripcion': 'Sudadera unisex con capucha, interior afelpado.',
+        'precio': 49.90,
+        'imagen_base': 'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=600&q=80',
+        'icono': '🧥',
+    },
+    {
+        'id': 'bolsa',
+        'nombre': 'Bolsa de tela',
+        'descripcion': 'Bolsa tote 100% algodón, resistente y reutilizable.',
+        'precio': 14.90,
+        'imagen_base': 'https://images.unsplash.com/photo-1597633544424-20d0b6ec3094?w=600&q=80',
+        'icono': '👜',
+    },
+    {
+        'id': 'postal',
+        'nombre': 'Postal',
+        'descripcion': 'Postal de papel satinado 350g, 15×10cm.',
+        'precio': 4.90,
+        'imagen_base': 'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?w=600&q=80',
+        'icono': '📮',
+    },
+]
 
 
 with app.app_context():
@@ -145,7 +191,8 @@ def subir():
                 cloudinary_public_id=public_id,
                 thumbnail_url=thumbnail_url,
                 destacada='destacada' in request.form,
-                en_portfolio='en_portfolio' in request.form
+                en_portfolio='en_portfolio' in request.form,
+                imprimible='imprimible' in request.form
             )
             db.session.add(obra)
             db.session.commit()
@@ -180,6 +227,27 @@ def eliminar(id):
 def portfolio():
     obras = Obra.query.filter_by(en_portfolio=True).order_by(Obra.fecha_subida.desc()).all()
     return render_template('portfolio.html', obras=obras)
+
+
+@app.route('/shop')
+def shop():
+    obras_imprimibles = Obra.query.filter_by(imprimible=True, tipo='imagen').order_by(Obra.fecha_subida.desc()).all()
+    return render_template('shop.html', productos=PRODUCTOS, obras=obras_imprimibles)
+
+
+@app.route('/shop/<producto_id>')
+def shop_detalle(producto_id):
+    producto = next((p for p in PRODUCTOS if p['id'] == producto_id), None)
+    if not producto:
+        return redirect(url_for('shop'))
+    obra_id = request.args.get('obra_id', type=int)
+    obras_imprimibles = Obra.query.filter_by(imprimible=True, tipo='imagen').order_by(Obra.fecha_subida.desc()).all()
+    obra_seleccionada = Obra.query.get(obra_id) if obra_id else (obras_imprimibles[0] if obras_imprimibles else None)
+    return render_template('shop_detalle.html',
+                           producto=producto,
+                           obras=obras_imprimibles,
+                           obra=obra_seleccionada,
+                           productos=PRODUCTOS)
 
 
 @app.route('/api/obras')
