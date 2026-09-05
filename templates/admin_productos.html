@@ -48,9 +48,20 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-6 mb-4 text-sm">
-                <p class="text-zinc-400">Margen: <span class="margen-eur font-medium">{{ '%.2f'|format(p.margen) }}</span> €</p>
+            {% set unidades = unidades_vendidas.get(p.id, 0) %}
+            <div class="flex items-center gap-6 mb-1 text-sm flex-wrap">
+                <p class="text-zinc-400">Margen por unidad: <span class="margen-eur font-medium">{{ '%.2f'|format(p.margen) }}</span> €</p>
                 <p class="text-zinc-400">Margen: <span class="margen-pct font-medium">{{ '%.1f'|format(p.margen_porcentaje) }}</span> %</p>
+            </div>
+            <div class="mb-4 text-sm">
+                <p class="text-zinc-400">
+                    Vendidas: <span class="text-white font-medium">{{ unidades }}</span> uds ·
+                    Ganado hasta ahora:
+                    <span class="font-medium {{ 'text-emerald-400' if p.margen * unidades >= 0 else 'text-red-400' }}">
+                        {{ '%.2f'|format(p.margen * unidades) }}
+                    </span> €
+                </p>
+                <p class="text-zinc-600 text-xs mt-0.5">Calculado con el margen actual, no el que tenía en el momento de cada venta.</p>
             </div>
 
             <details class="mb-4">

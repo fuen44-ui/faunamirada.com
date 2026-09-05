@@ -97,14 +97,16 @@
                     </a>
                 {% else %}
                     <!-- Imagen card: abre lightbox -->
-                    <a href="{{ obra.archivo_url }}"
+                    <a href="{{ obra.thumbnail_url or obra.archivo_url }}"
                        class="glightbox block relative"
                        data-gallery="galeria"
                        data-title="{{ obra.titulo }}"
-                       data-description="{{ obra.artista }}{% if obra.año %} · {{ obra.año }}{% endif %}">
+                       data-description="{{ obra.artista }}{% if obra.año %} · {{ obra.año }}{% endif %}"
+                       oncontextmenu="return false;" ondragstart="return false;">
                         <img src="{{ obra.thumbnail_url or obra.archivo_url }}"
                              alt="{{ obra.titulo }}"
-                             class="w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                             draggable="false"
+                             class="w-full object-cover group-hover:scale-105 transition-transform duration-500 select-none"
                              loading="lazy">
                         <div class="overlay absolute inset-0 bg-black/40 flex items-center justify-center">
                             <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">

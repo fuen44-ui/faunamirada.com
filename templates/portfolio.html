@@ -41,14 +41,16 @@
                             </div>
                         </a>
                     {% else %}
-                        <a href="{{ obra.archivo_url }}"
+                        <a href="{{ obra.thumbnail_url or obra.archivo_url }}"
                            class="glightbox block w-full h-full"
                            data-gallery="portfolio"
                            data-title="{{ obra.titulo }}"
-                           data-description="{{ obra.artista }}{% if obra.año %} · {{ obra.año }}{% endif %}{% if obra.tecnica %} · {{ obra.tecnica }}{% endif %}">
+                           data-description="{{ obra.artista }}{% if obra.año %} · {{ obra.año }}{% endif %}{% if obra.tecnica %} · {{ obra.tecnica }}{% endif %}"
+                           oncontextmenu="return false;" ondragstart="return false;">
                             <img src="{{ obra.thumbnail_url or obra.archivo_url }}"
                                  alt="{{ obra.titulo }}"
-                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                 draggable="false"
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 select-none"
                                  loading="lazy">
                             <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">

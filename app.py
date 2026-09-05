@@ -418,6 +418,20 @@ def admin_ajustes():
 
 # --- Productos y precios ---
 
+def _unidades_vendidas_por_producto():
+    unidades = {}
+    for pedido in Pedido.query.all():
+        try:
+            items = json.loads(pedido.items or '[]')
+        except (json.JSONDecodeError, TypeError):
+            continue
+        for it in items:
+            if it.get('tipo') == 'producto':
+                pid = it.get('producto_id')
+                unidades[pid] = unidades.get(pid, 0) + int(it.get('cantidad', 1))
+    return unidades
+
+
 @app.route('/admin/productos', methods=['GET', 'POST'])
 @requiere_login
 def admin_productos():
@@ -442,7 +456,8 @@ def admin_productos():
         flash('Producto guardado', 'success')
         return redirect(url_for('admin_productos'))
     productos = Producto.query.order_by(Producto.nombre).all()
-    return render_template('admin_productos.html', productos=productos)
+    unidades_vendidas = _unidades_vendidas_por_producto()
+    return render_template('admin_productos.html', productos=productos, unidades_vendidas=unidades_vendidas)
 
 
 @app.route('/admin/productos/<id>/toggle', methods=['POST'])

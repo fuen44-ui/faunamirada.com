@@ -85,7 +85,18 @@
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Disuasión de descarga de obras (no es infalible, ninguna web lo es) */
+        img { -webkit-user-drag: none; user-select: none; }
     </style>
+    <script>
+        document.addEventListener('contextmenu', function (e) {
+            if (e.target.tagName === 'IMG') e.preventDefault();
+        });
+        document.addEventListener('dragstart', function (e) {
+            if (e.target.tagName === 'IMG') e.preventDefault();
+        });
+    </script>
 
     {% block extra_head %}{% endblock %}
 </head>

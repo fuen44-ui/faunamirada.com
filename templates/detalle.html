@@ -20,12 +20,14 @@
             {% if obra.tipo == 'video' %}
                 <video src="{{ obra.archivo_url }}" controls class="w-full rounded-2xl shadow-2xl" autoplay muted loop></video>
             {% else %}
-                <a href="{{ obra.archivo_url }}" class="glightbox block" data-title="{{ obra.titulo }}">
-                    <img src="{{ obra.archivo_url }}"
+                <a href="{{ obra.thumbnail_url or obra.archivo_url }}" class="glightbox block" data-title="{{ obra.titulo }}"
+                   oncontextmenu="return false;" ondragstart="return false;">
+                    <img src="{{ obra.thumbnail_url or obra.archivo_url }}"
                          alt="{{ obra.titulo }}"
-                         class="w-full rounded-2xl shadow-2xl hover:opacity-95 transition-opacity cursor-zoom-in">
+                         draggable="false"
+                         class="w-full rounded-2xl shadow-2xl hover:opacity-95 transition-opacity cursor-zoom-in select-none">
                 </a>
-                <p class="text-zinc-600 text-xs text-center mt-3">Haz clic para ver en tamaño completo</p>
+                <p class="text-zinc-600 text-xs text-center mt-3">Vista web — el archivo de impresión no es descargable</p>
             {% endif %}
         </div>
 
