@@ -1,10 +1,14 @@
 import os
+import uuid
+import subprocess
+import tempfile
+from io import BytesIO
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
+import boto3
+from botocore.client import Config
+from PIL import Image
 from datetime import datetime
 
 load_dotenv()
@@ -15,13 +19,33 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///fau
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max
 
-cloudinary.config(
-    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
-    api_key=os.getenv('CLOUDINARY_API_KEY'),
-    api_secret=os.getenv('CLOUDINARY_API_SECRET')
+R2_BUCKET_NAME = os.getenv('R2_BUCKET_NAME')
+R2_PUBLIC_URL = os.getenv('R2_PUBLIC_URL', '').rstrip('/')
+
+s3 = boto3.client(
+    's3',
+    endpoint_url=os.getenv('R2_ENDPOINT_URL'),
+    aws_access_key_id=os.getenv('R2_ACCESS_KEY_ID'),
+    aws_secret_access_key=os.getenv('R2_SECRET_ACCESS_KEY'),
+    config=Config(signature_version='s3v4'),
+    region_name='auto',
 )
 
 db = SQLAlchemy(app)
+
+
+def subir_a_r2(datos, key, content_type):
+    s3.put_object(Bucket=R2_BUCKET_NAME, Key=key, Body=datos, ContentType=content_type)
+    return f'{R2_PUBLIC_URL}/{key}'
+
+
+def generar_miniatura(imagen_bytes):
+    img = Image.open(BytesIO(imagen_bytes))
+    img = img.convert('RGB')
+    img.thumbnail((800, 800))
+    buf = BytesIO()
+    img.save(buf, format='JPEG', quality=85)
+    return buf.getvalue()
 
 
 class Obra(db.Model):
@@ -33,9 +57,10 @@ class Obra(db.Model):
     tecnica = db.Column(db.String(100))
     categoria = db.Column(db.String(100), default='Pintura')
     tipo = db.Column(db.String(10), default='imagen')  # imagen o video
-    cloudinary_url = db.Column(db.String(500))
-    cloudinary_public_id = db.Column(db.String(200))
+    archivo_url = db.Column(db.String(500))
+    archivo_key = db.Column(db.String(200))
     thumbnail_url = db.Column(db.String(500))
+    thumbnail_key = db.Column(db.String(200))
     destacada = db.Column(db.Boolean, default=False)
     en_portfolio = db.Column(db.Boolean, default=False)
     imprimible = db.Column(db.Boolean, default=False)
@@ -51,8 +76,8 @@ class Obra(db.Model):
             'tecnica': self.tecnica,
             'categoria': self.categoria,
             'tipo': self.tipo,
-            'url': self.cloudinary_url,
-            'thumbnail': self.thumbnail_url or self.cloudinary_url,
+            'url': self.archivo_url,
+            'thumbnail': self.thumbnail_url or self.archivo_url,
             'destacada': self.destacada,
         }
 
@@ -154,30 +179,18 @@ def subir():
         tipo = 'video' if es_video else 'imagen'
 
         try:
-            resource_type = 'video' if es_video else 'image'
-            resultado = cloudinary.uploader.upload(
-                archivo,
-                folder='faunamirada',
-                resource_type=resource_type,
-                transformation=[{'quality': 'auto', 'fetch_format': 'auto'}] if not es_video else []
-            )
+            ext = os.path.splitext(nombre)[1]
+            clave = f'faunamirada/{uuid.uuid4().hex}{ext}'
+            datos = archivo.read()
 
-            cloudinary_url = resultado['secure_url']
-            public_id = resultado['public_id']
+            archivo_url = subir_a_r2(datos, clave, archivo.mimetype)
 
-            # Thumbnail para videos
-            if es_video:
-                thumbnail_url = cloudinary.utils.cloudinary_url(
-                    public_id,
-                    resource_type='video',
-                    format='jpg',
-                    transformation=[{'width': 800, 'crop': 'fill'}]
-                )[0]
-            else:
-                thumbnail_url = cloudinary.utils.cloudinary_url(
-                    public_id,
-                    transformation=[{'width': 800, 'crop': 'fill', 'quality': 'auto'}]
-                )[0]
+            thumbnail_url = None
+            clave_thumb = None
+            if not es_video:
+                clave_thumb = f'faunamirada/thumb_{uuid.uuid4().hex}.jpg'
+                miniatura = generar_miniatura(datos)
+                thumbnail_url = subir_a_r2(miniatura, clave_thumb, 'image/jpeg')
 
             obra = Obra(
                 titulo=titulo,
@@ -187,9 +200,10 @@ def subir():
                 tecnica=request.form.get('tecnica', ''),
                 categoria=request.form.get('categoria', 'Pintura'),
                 tipo=tipo,
-                cloudinary_url=cloudinary_url,
-                cloudinary_public_id=public_id,
+                archivo_url=archivo_url,
+                archivo_key=clave,
                 thumbnail_url=thumbnail_url,
+                thumbnail_key=clave_thumb,
                 destacada='destacada' in request.form,
                 en_portfolio='en_portfolio' in request.form,
                 imprimible='imprimible' in request.form
@@ -212,9 +226,10 @@ def subir():
 def eliminar(id):
     obra = Obra.query.get_or_404(id)
     try:
-        if obra.cloudinary_public_id:
-            resource_type = 'video' if obra.tipo == 'video' else 'image'
-            cloudinary.uploader.destroy(obra.cloudinary_public_id, resource_type=resource_type)
+        if obra.archivo_key:
+            s3.delete_object(Bucket=R2_BUCKET_NAME, Key=obra.archivo_key)
+        if obra.thumbnail_key:
+            s3.delete_object(Bucket=R2_BUCKET_NAME, Key=obra.thumbnail_key)
         db.session.delete(obra)
         db.session.commit()
         flash('Obra eliminada', 'success')

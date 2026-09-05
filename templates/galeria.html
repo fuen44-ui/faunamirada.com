@@ -30,10 +30,10 @@
         <a href="{{ url_for('detalle', id=obra.id) }}"
            class="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-zinc-900 block">
             {% if obra.tipo == 'video' %}
-                <video src="{{ obra.cloudinary_url }}" muted autoplay loop playsinline
+                <video src="{{ obra.archivo_url }}" muted autoplay loop playsinline
                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"></video>
             {% else %}
-                <img src="{{ obra.thumbnail_url or obra.cloudinary_url }}"
+                <img src="{{ obra.thumbnail_url or obra.archivo_url }}"
                      alt="{{ obra.titulo }}"
                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                      loading="lazy">
@@ -85,7 +85,7 @@
                 {% if obra.tipo == 'video' %}
                     <!-- Video card: click abre detalle -->
                     <a href="{{ url_for('detalle', id=obra.id) }}" class="block relative">
-                        <video src="{{ obra.cloudinary_url }}" muted autoplay loop playsinline
+                        <video src="{{ obra.archivo_url }}" muted autoplay loop playsinline
                                class="w-full object-cover group-hover:scale-105 transition-transform duration-500"></video>
                         <div class="overlay absolute inset-0 bg-black/50 flex items-center justify-center">
                             <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
@@ -97,12 +97,12 @@
                     </a>
                 {% else %}
                     <!-- Imagen card: abre lightbox -->
-                    <a href="{{ obra.cloudinary_url }}"
+                    <a href="{{ obra.archivo_url }}"
                        class="glightbox block relative"
                        data-gallery="galeria"
                        data-title="{{ obra.titulo }}"
                        data-description="{{ obra.artista }}{% if obra.año %} · {{ obra.año }}{% endif %}">
-                        <img src="{{ obra.thumbnail_url or obra.cloudinary_url }}"
+                        <img src="{{ obra.thumbnail_url or obra.archivo_url }}"
                              alt="{{ obra.titulo }}"
                              class="w-full object-cover group-hover:scale-105 transition-transform duration-500"
                              loading="lazy">

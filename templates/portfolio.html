@@ -30,7 +30,7 @@
                 <div class="relative overflow-hidden rounded-2xl bg-zinc-900 aspect-[4/3]">
                     {% if obra.tipo == 'video' %}
                         <a href="{{ url_for('detalle', id=obra.id) }}" class="block w-full h-full">
-                            <video src="{{ obra.cloudinary_url }}" muted autoplay loop playsinline
+                            <video src="{{ obra.archivo_url }}" muted autoplay loop playsinline
                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"></video>
                             <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
@@ -41,12 +41,12 @@
                             </div>
                         </a>
                     {% else %}
-                        <a href="{{ obra.cloudinary_url }}"
+                        <a href="{{ obra.archivo_url }}"
                            class="glightbox block w-full h-full"
                            data-gallery="portfolio"
                            data-title="{{ obra.titulo }}"
                            data-description="{{ obra.artista }}{% if obra.año %} · {{ obra.año }}{% endif %}{% if obra.tecnica %} · {{ obra.tecnica }}{% endif %}">
-                            <img src="{{ obra.thumbnail_url or obra.cloudinary_url }}"
+                            <img src="{{ obra.thumbnail_url or obra.archivo_url }}"
                                  alt="{{ obra.titulo }}"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                  loading="lazy">

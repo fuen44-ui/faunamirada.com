@@ -58,7 +58,7 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {% for obra in obras %}
             <div class="group relative aspect-square rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800">
-                <img src="{{ obra.thumbnail_url or obra.cloudinary_url }}"
+                <img src="{{ obra.thumbnail_url or obra.archivo_url }}"
                      alt="{{ obra.titulo }}"
                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">

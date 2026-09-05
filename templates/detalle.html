@@ -18,10 +18,10 @@
         <!-- Media -->
         <div class="sticky top-20">
             {% if obra.tipo == 'video' %}
-                <video src="{{ obra.cloudinary_url }}" controls class="w-full rounded-2xl shadow-2xl" autoplay muted loop></video>
+                <video src="{{ obra.archivo_url }}" controls class="w-full rounded-2xl shadow-2xl" autoplay muted loop></video>
             {% else %}
-                <a href="{{ obra.cloudinary_url }}" class="glightbox block" data-title="{{ obra.titulo }}">
-                    <img src="{{ obra.cloudinary_url }}"
+                <a href="{{ obra.archivo_url }}" class="glightbox block" data-title="{{ obra.titulo }}">
+                    <img src="{{ obra.archivo_url }}"
                          alt="{{ obra.titulo }}"
                          class="w-full rounded-2xl shadow-2xl hover:opacity-95 transition-opacity cursor-zoom-in">
                 </a>
@@ -110,10 +110,10 @@
             <a href="{{ url_for('detalle', id=rel.id) }}"
                class="group relative aspect-square overflow-hidden rounded-xl bg-zinc-900 block">
                 {% if rel.tipo == 'video' %}
-                    <video src="{{ rel.cloudinary_url }}" muted autoplay loop playsinline
+                    <video src="{{ rel.archivo_url }}" muted autoplay loop playsinline
                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></video>
                 {% else %}
-                    <img src="{{ rel.thumbnail_url or rel.cloudinary_url }}"
+                    <img src="{{ rel.thumbnail_url or rel.archivo_url }}"
                          alt="{{ rel.titulo }}"
                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                          loading="lazy">

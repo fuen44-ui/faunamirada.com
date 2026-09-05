@@ -30,7 +30,7 @@
                          class="absolute inset-0 flex items-center justify-center pointer-events-none"
                          style="padding: 20%;">
                         <img id="diseño-img"
-                             src="{{ obra.thumbnail_url or obra.cloudinary_url }}"
+                             src="{{ obra.thumbnail_url or obra.archivo_url }}"
                              alt="{{ obra.titulo }}"
                              class="w-full h-full object-contain opacity-90 mix-blend-multiply rounded-lg shadow-2xl">
                     </div>
@@ -70,10 +70,10 @@
                 {% if obras %}
                 <div class="grid grid-cols-3 sm:grid-cols-4 gap-3" id="selector-obras">
                     {% for o in obras %}
-                    <button onclick="seleccionarObra({{ o.id }}, '{{ o.thumbnail_url or o.cloudinary_url }}', '{{ o.titulo }}')"
+                    <button onclick="seleccionarObra({{ o.id }}, '{{ o.thumbnail_url or o.archivo_url }}', '{{ o.titulo }}')"
                             class="obra-btn relative aspect-square rounded-xl overflow-hidden border-2 transition-all
                                    {% if obra and obra.id == o.id %}border-fauna-500 ring-2 ring-fauna-500/30{% else %}border-zinc-700 hover:border-zinc-500{% endif %}">
-                        <img src="{{ o.thumbnail_url or o.cloudinary_url }}"
+                        <img src="{{ o.thumbnail_url or o.archivo_url }}"
                              alt="{{ o.titulo }}"
                              class="w-full h-full object-cover">
                         {% if obra and obra.id == o.id %}
