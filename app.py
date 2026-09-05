@@ -215,6 +215,22 @@ PRODUCTOS_INICIALES = [
         'imagen_base': 'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?w=600&q=80',
         'icono': '📮',
     },
+    {
+        'id': 'calendario',
+        'nombre': 'Calendario',
+        'descripcion': 'Calendario de pared anual con tus obras favoritas, una por mes.',
+        'precio': 24.90,
+        'imagen_base': 'https://placehold.co/600x400/1c1917/f5f5f4?text=Calendario',
+        'icono': '📅',
+    },
+    {
+        'id': 'pegatinas',
+        'nombre': 'Pack de pegatinas',
+        'descripcion': 'Pack de pegatinas troqueladas de vinilo resistente al agua.',
+        'precio': 6.90,
+        'imagen_base': 'https://placehold.co/600x400/1c1917/f5f5f4?text=Pegatinas',
+        'icono': '🏷️',
+    },
 ]
 
 
@@ -223,13 +239,13 @@ with app.app_context():
     if not get_ajuste('admin_password_hash'):
         clave_inicial = os.getenv('ADMIN_PASSWORD', 'faunamirada2026')
         set_ajuste('admin_password_hash', generate_password_hash(clave_inicial))
-    if Producto.query.count() == 0:
-        for p in PRODUCTOS_INICIALES:
+    for p in PRODUCTOS_INICIALES:
+        if not db.session.get(Producto, p['id']):
             db.session.add(Producto(
                 id=p['id'], nombre=p['nombre'], descripcion=p['descripcion'],
                 icono=p['icono'], imagen_base=p['imagen_base'], precio=p['precio'],
             ))
-        db.session.commit()
+    db.session.commit()
 
 
 @app.route('/login', methods=['GET', 'POST'])
