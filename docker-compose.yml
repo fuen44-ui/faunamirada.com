@@ -13,6 +13,7 @@ services:
       R2_ENDPOINT_URL: ${R2_ENDPOINT_URL}
       R2_BUCKET_NAME: ${R2_BUCKET_NAME}
       R2_PUBLIC_URL: ${R2_PUBLIC_URL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
     volumes:
       - faunamirada_data:/app/data
     expose:

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Carrito — Fauna Mirada{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-16">
+    <h1 class="font-display text-4xl text-white mb-10">Tu carrito</h1>
+
+    {% if items %}
+    <div class="space-y-4 mb-10">
+        {% for it in items %}
+        <div class="bg-zinc-900/60 border border-zinc-800 rounded-xl p-4 flex items-center gap-4">
+            {% if it.imagen %}
+            <img src="{{ it.imagen }}" class="w-16 h-16 object-cover rounded-lg" alt="">
+            {% else %}
+            <div class="w-16 h-16 bg-fauna-500/20 rounded-lg flex items-center justify-center text-2xl">🎁</div>
+            {% endif %}
+            <div class="flex-1">
+                <p class="text-white font-medium">{{ it.nombre }}{% if it.obra_titulo %} — {{ it.obra_titulo }}{% endif %}</p>
+                <p class="text-zinc-500 text-sm">{{ it.cantidad }} × {{ '%.2f'|format(it.precio_unidad) }}€</p>
+            </div>
+            <p class="text-white font-medium">{{ '%.2f'|format(it.subtotal) }}€</p>
+            <form method="POST" action="{{ url_for('carrito_quitar', idx=it.idx) }}">
+                <button class="text-zinc-500 hover:text-red-400 text-sm">Quitar</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="flex justify-between items-center border-t border-zinc-800 pt-6 mb-8">
+        <p class="text-zinc-400">Total</p>
+        <p class="text-2xl font-display text-white">{{ '%.2f'|format(total) }}€</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('checkout') }}">
+        <button type="submit"
+                class="w-full bg-fauna-500 hover:bg-fauna-400 text-white py-4 rounded-xl font-medium transition-colors">
+            Pagar
+        </button>
+    </form>
+    {% else %}
+    <p class="text-zinc-600 text-center py-16">Tu carrito está vacío.</p>
+    <a href="{{ url_for('shop') }}" class="block text-center text-fauna-400 hover:text-fauna-300">Ir a la tienda</a>
+    {% endif %}
+</div>
+{% endblock %}

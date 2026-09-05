@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Ajustes — Fauna Mirada{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-16">
+    <h1 class="font-display text-4xl text-white mb-2">Ajustes</h1>
+    <p class="text-zinc-500 mb-10">Proveedor de impresión y cobro online. Puedes cambiar de proveedor en cualquier momento sin tocar código.</p>
+
+    <form method="POST" class="space-y-8">
+
+        <div class="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5">
+            <h2 class="text-white font-medium mb-4">Proveedor de impresión / envío</h2>
+            <label class="block text-sm text-zinc-300 mb-2">Proveedor activo</label>
+            <select name="proveedor_activo" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-3 text-white mb-4">
+                <option value="simulado" {% if valores.proveedor_activo == 'simulado' %}selected{% endif %}>Simulado (pruebas, no imprime de verdad)</option>
+                <option value="printful" {% if valores.proveedor_activo == 'printful' %}selected{% endif %}>Printful</option>
+                <option value="gelato" {% if valores.proveedor_activo == 'gelato' %}selected{% endif %}>Gelato</option>
+            </select>
+
+            <label class="block text-sm text-zinc-300 mb-2">Printful — API Key</label>
+            <input type="text" name="printful_api_key" value="{{ valores.printful_api_key }}"
+                   placeholder="Pégala aquí cuando tengas cuenta en Printful"
+                   class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-3 text-white mb-4">
+
+            <label class="block text-sm text-zinc-300 mb-2">Gelato — API Key</label>
+            <input type="text" name="gelato_api_key" value="{{ valores.gelato_api_key }}"
+                   placeholder="Pégala aquí cuando tengas cuenta en Gelato"
+                   class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-3 text-white">
+        </div>
+
+        <div class="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5">
+            <h2 class="text-white font-medium mb-4">Cobro online (Stripe)</h2>
+            <label class="block text-sm text-zinc-300 mb-2">Clave secreta (sk_...)</label>
+            <input type="text" name="stripe_secret_key" value="{{ valores.stripe_secret_key }}"
+                   class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-3 text-white mb-4">
+
+            <label class="block text-sm text-zinc-300 mb-2">Clave publicable (pk_...)</label>
+            <input type="text" name="stripe_publishable_key" value="{{ valores.stripe_publishable_key }}"
+                   class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-3 text-white mb-4">
+
+            <label class="block text-sm text-zinc-300 mb-2">Webhook secret (whsec_...)</label>
+            <input type="text" name="stripe_webhook_secret" value="{{ valores.stripe_webhook_secret }}"
+                   placeholder="Del endpoint /webhook/stripe configurado en Stripe"
+                   class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-3 text-white">
+        </div>
+
+        <div class="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5">
+            <h2 class="text-white font-medium mb-4">Cambiar contraseña de administración</h2>
+            <input type="password" name="nueva_password" placeholder="Dejar en blanco para no cambiarla"
+                   class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-3 text-white">
+        </div>
+
+        <button type="submit"
+                class="w-full bg-fauna-500 hover:bg-fauna-400 text-white py-3 rounded-xl font-medium transition-colors">
+            Guardar ajustes
+        </button>
+    </form>
+</div>
+{% endblock %}

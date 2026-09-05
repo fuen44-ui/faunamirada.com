@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Iniciar sesión — Fauna Mirada{% endblock %}
+{% block content %}
+<div class="max-w-sm mx-auto px-4 sm:px-6 py-24">
+    <h1 class="font-display text-3xl text-white mb-8 text-center">Acceso administración</h1>
+    <form method="POST" class="space-y-5">
+        <div>
+            <label for="password" class="block text-sm font-medium text-zinc-300 mb-2">Contraseña</label>
+            <input type="password" name="password" id="password" required autofocus
+                   class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white
+                          placeholder-zinc-600 focus:outline-none focus:border-fauna-500 focus:ring-1 focus:ring-fauna-500
+                          transition-colors">
+        </div>
+        <button type="submit"
+                class="w-full bg-fauna-500 hover:bg-fauna-400 text-white py-3 rounded-xl font-medium transition-colors">
+            Entrar
+        </button>
+    </form>
+</div>
+{% endblock %}

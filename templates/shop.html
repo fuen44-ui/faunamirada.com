@@ -12,6 +12,30 @@
         </p>
     </div>
 
+    {% if ofertas %}
+    <div class="mb-16">
+        <h2 class="font-display text-3xl text-white mb-8 text-center">Ofertas</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for oferta in ofertas %}
+            <div class="bg-zinc-900 border border-fauna-500/40 rounded-2xl p-6 flex flex-col">
+                <h3 class="font-display text-xl text-white mb-1">{{ oferta.nombre }}</h3>
+                <p class="text-zinc-400 text-sm mb-4 flex-1">{{ oferta.descripcion }}</p>
+                <p class="text-fauna-400 font-semibold text-lg mb-1">{{ '%.2f'|format(oferta.precio) }} €</p>
+                {% if oferta.portes_incluidos %}<p class="text-zinc-500 text-xs mb-4">Portes incluidos</p>{% endif %}
+                <form method="POST" action="{{ url_for('carrito_agregar') }}">
+                    <input type="hidden" name="tipo" value="oferta">
+                    <input type="hidden" name="oferta_id" value="{{ oferta.id }}">
+                    <input type="hidden" name="cantidad" value="1">
+                    <button type="submit" class="w-full bg-fauna-500 hover:bg-fauna-400 text-white py-3 rounded-xl font-medium transition-colors">
+                        Añadir al carrito
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
     {% if not obras %}
     <!-- Sin obras imprimibles todavía -->
     <div class="text-center py-20 text-zinc-500">

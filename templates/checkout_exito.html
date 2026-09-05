@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Pedido confirmado — Fauna Mirada{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto px-4 sm:px-6 py-24 text-center">
+    <div class="w-16 h-16 bg-fauna-500/20 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">✓</div>
+    <h1 class="font-display text-3xl text-white mb-3">¡Gracias por tu pedido!</h1>
+    <p class="text-zinc-500">Te llegará un email de confirmación en breve. Prepararemos y enviaremos tu pedido lo antes posible.</p>
+    <a href="{{ url_for('galeria') }}" class="inline-block mt-8 text-fauna-400 hover:text-fauna-300">Volver a la galería</a>
+</div>
+{% endblock %}

@@ -107,24 +107,28 @@
                 </div>
             </div>
 
-            <!-- Botón comprar (simulado) -->
-            <button id="btn-comprar"
-                    onclick="simularCompra()"
-                    {% if not obra %}disabled{% endif %}
-                    class="w-full bg-fauna-500 hover:bg-fauna-400 disabled:bg-zinc-700 disabled:cursor-not-allowed
-                           text-white font-medium py-4 rounded-xl transition-colors text-lg
-                           flex items-center justify-center gap-3">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M3 3h2l.4 2M7 13h10l4-4H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                </svg>
-                {% if obra %}Añadir al carrito{% else %}Selecciona un diseño{% endif %}
-            </button>
+            <!-- Añadir al carrito -->
+            <form id="form-comprar" method="POST" action="{{ url_for('carrito_agregar') }}">
+                <input type="hidden" name="tipo" value="producto">
+                <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                <input type="hidden" name="obra_id" id="input-obra-id" value="{{ obra.id if obra else '' }}">
+                <input type="hidden" name="cantidad" value="1">
+                <button id="btn-comprar" type="submit"
+                        {% if not obra %}disabled{% endif %}
+                        class="w-full bg-fauna-500 hover:bg-fauna-400 disabled:bg-zinc-700 disabled:cursor-not-allowed
+                               text-white font-medium py-4 rounded-xl transition-colors text-lg
+                               flex items-center justify-center gap-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 3h2l.4 2M7 13h10l4-4H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    {% if obra %}Añadir al carrito{% else %}Selecciona un diseño{% endif %}
+                </button>
+            </form>
 
-            <!-- Aviso simulación -->
             <div class="mt-4 bg-zinc-900 border border-zinc-700 rounded-xl p-4 text-zinc-400 text-sm">
-                <p class="font-medium text-zinc-300 mb-1">🚧 Tienda en construcción</p>
-                <p>Esta es una vista previa. Próximamente podrás realizar pedidos reales con envío a domicilio.</p>
+                <p class="font-medium text-zinc-300 mb-1">🖼️ Vista previa simulada</p>
+                <p>El mockup del producto es orientativo. El diseño se imprime sobre el producto real al confirmar el pedido.</p>
             </div>
         </div>
     </div>
@@ -137,6 +141,7 @@
 
     function seleccionarObra(id, imgUrl, titulo) {
         obraActual = id;
+        document.getElementById('input-obra-id').value = id;
 
         // Actualizar mockup
         const diseñoImg = document.getElementById('diseño-img');
@@ -175,19 +180,5 @@
         </svg> Añadir al carrito`;
     }
 
-    function simularCompra() {
-        const btn = document.getElementById('btn-comprar');
-        btn.innerHTML = '✓ ¡Añadido! (próximamente disponible)';
-        btn.classList.remove('bg-fauna-500', 'hover:bg-fauna-400');
-        btn.classList.add('bg-emerald-700');
-        setTimeout(() => {
-            btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M3 3h2l.4 2M7 13h10l4-4H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-            </svg> Añadir al carrito`;
-            btn.classList.add('bg-fauna-500', 'hover:bg-fauna-400');
-            btn.classList.remove('bg-emerald-700');
-        }, 2000);
-    }
 </script>
 {% endblock %}
