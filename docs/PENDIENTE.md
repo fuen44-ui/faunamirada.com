@@ -47,6 +47,22 @@
       (p. ej. `img.faunamirada.com`) al bucket R2 en vez del `pub-xxxx.r2.dev`
       de desarrollo (ver `docs/ALMACENAMIENTO.md`).
 
+## Panel de estadísticas
+- [ ] Contador de visitas (web analítica: visitas totales, por página, por
+      mes/año — requiere decidir si se monta algo propio o se usa un
+      servicio externo tipo Plausible/Umami).
+- [ ] Contador de compras (número de pedidos) y totales de ventas, por
+      mes y por año.
+- [ ] Total de productos vendidos, desglosado por producto (ya existe la
+      base — unidades vendidas — en `/admin/productos`; falta la vista
+      agregada por periodo).
+- [ ] Total de transporte pagado (coste de envío asumido) y total de IVA
+      recaudado, por mes/año — útil de cara a declaraciones.
+- [ ] Margen general del negocio (todos los productos juntos), por
+      mes/año, no solo por producto individual.
+- [ ] Pensar dónde vive esto: ¿ampliar `/admin/pedidos` con filtros de
+      fecha y totales, o una pantalla nueva tipo `/admin/estadisticas`?
+
 ## Posible trabajo futuro (no urgente)
 - [ ] Roles diferenciados admin/gestor (ahora mismo hay una sola contraseña
       compartida sin distinción de permisos).
